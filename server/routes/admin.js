@@ -41,12 +41,12 @@ router.get('/employees', adminAuth, async (req, res) => {
     res.json(employees);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
 // @route   GET api/admin/attendance
-// @desc    Get attendance records for a specific date
+// @desc    Get attendance records based on date parameters
 // @access  Admin
 router.get('/attendance', adminAuth, async (req, res) => {
   try {
@@ -59,8 +59,8 @@ router.get('/attendance', adminAuth, async (req, res) => {
       queryDate = new Date();
     }
     
-    const startOfDay = moment(queryDate).startOf('day');
-    const endOfDay = moment(queryDate).endOf('day');
+    const startOfDay = moment(queryDate).utcOffset('+05:30').startOf('day');
+    const endOfDay = moment(queryDate).utcOffset('+05:30').endOf('day');
     
     const attendance = await Attendance.find({
       date: {
@@ -99,7 +99,7 @@ router.get('/attendance', adminAuth, async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -111,8 +111,8 @@ router.get('/attendance/monthly', adminAuth, async (req, res) => {
     const { year, month, employeeId } = req.query;
     
     // Create date range for the month
-    const startDate = moment(`${year}-${month}-01`).startOf('month');
-    const endDate = moment(startDate).endOf('month');
+    const startDate = moment(`${year}-${month}-01`).utcOffset('+05:30').startOf('month');
+    const endDate = moment(startDate).utcOffset('+05:30').endOf('month');
     
     // Build query
     let query = {
@@ -142,7 +142,7 @@ router.get('/attendance/monthly', adminAuth, async (req, res) => {
         const allDays = [];
         
         for (let day = 1; day <= daysInMonth; day++) {
-          const date = moment(`${year}-${month}-${day}`).startOf('day');
+          const date = moment(`${year}-${month}-${day}`).utcOffset('+05:30').startOf('day');
           
           // Skip future dates
           if (date > moment()) {
@@ -182,7 +182,7 @@ router.get('/attendance/monthly', adminAuth, async (req, res) => {
     res.json(attendance);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -194,24 +194,27 @@ router.post('/attendance/update', adminAuth, async (req, res) => {
 
   try {
     // Format the date
-    const attendanceDate = moment(date).startOf('day');
+    const attendanceDate = moment(date).utcOffset('+05:30').startOf('day');
+    const endOfDay = moment(date).utcOffset('+05:30').endOf('day');
     
-    // Find or create attendance record
+    // Find existing attendance record for this employee on this day
     let attendance = await Attendance.findOne({
       employee: employeeId,
       date: {
         $gte: attendanceDate.toDate(),
-        $lt: moment(attendanceDate).endOf('day').toDate()
+        $lt: endOfDay.toDate()
       }
     });
     
     if (!attendance) {
+      // If no record exists, create a new one
       attendance = new Attendance({
         employee: employeeId,
         date: attendanceDate.toDate(),
         status
       });
     } else {
+      // Update the existing record
       attendance.status = status;
     }
     
@@ -229,7 +232,7 @@ router.post('/attendance/update', adminAuth, async (req, res) => {
     res.json(attendance);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -245,7 +248,7 @@ router.get('/leave-requests', adminAuth, async (req, res) => {
     res.json(leaveRequests);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -277,14 +280,15 @@ router.post('/leave-requests/update', adminAuth, async (req, res) => {
     
     // If approved, update attendance
     if (status === 'Approved') {
-      const leaveDate = moment(leaveRequest.leaveDate).startOf('day');
+      const leaveDate = moment(leaveRequest.leaveDate).utcOffset('+05:30').startOf('day');
+      const endOfLeaveDay = moment(leaveRequest.leaveDate).utcOffset('+05:30').endOf('day');
       
       // Find or create attendance record
       let attendance = await Attendance.findOne({
         employee: leaveRequest.employee._id,
         date: {
           $gte: leaveDate.toDate(),
-          $lt: moment(leaveDate).endOf('day').toDate()
+          $lt: endOfLeaveDay.toDate()
         }
       });
       
@@ -304,7 +308,7 @@ router.post('/leave-requests/update', adminAuth, async (req, res) => {
     res.json(leaveRequest);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
