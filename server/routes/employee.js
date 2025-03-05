@@ -51,7 +51,7 @@ router.post('/check-in', auth, async (req, res) => {
       date: null
     });
     
-    const today = moment().startOf('day');
+    const today = moment().utcOffset('+05:30').startOf('day'); // Adjust for IST timezone
     
     // Check if employee has already checked in today
     const existingAttendance = await Attendance.findOne({
@@ -97,7 +97,7 @@ router.post('/check-in', auth, async (req, res) => {
 // @access  Private
 router.post('/check-out', auth, async (req, res) => {
   try {
-    const today = moment().startOf('day');
+    const today = moment().utcOffset('+05:30').startOf('day'); // Adjust for IST timezone
     
     // Find today's attendance record
     const attendance = await Attendance.findOne({

@@ -135,12 +135,20 @@ document.addEventListener('DOMContentLoaded', function() {
   function formatTime(dateString) {
     if (!dateString) return '—';
     
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true
-    });
+    try {
+      const date = new Date(dateString);
+      // Check if the date is valid
+      if (isNaN(date.getTime())) return '—';
+      
+      return date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch (error) {
+      console.error('Error formatting time:', error);
+      return '—';
+    }
   }
 
   // Load attendance data based on selected filters
