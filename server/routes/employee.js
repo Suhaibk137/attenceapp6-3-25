@@ -138,9 +138,16 @@ router.post('/leave-request', auth, async (req, res) => {
   const { leaveDate, reason } = req.body;
 
   try {
+    // Parse and validate the date
+    const parsedDate = moment(leaveDate).utcOffset('+05:30').startOf('day');
+    
+    if (!parsedDate.isValid()) {
+      return res.status(400).json({ msg: 'Invalid date format' });
+    }
+    
     const leave = new LeaveRequest({
       employee: req.employee.id,
-      leaveDate,
+      leaveDate: parsedDate.toDate(),
       reason
     });
 
@@ -148,7 +155,7 @@ router.post('/leave-request', auth, async (req, res) => {
 
     res.json(leave);
   } catch (err) {
-    console.error(err.message);
+    console.error('Leave request error:', err.message);
     res.status(500).json({ msg: 'Server error' });
   }
 });
@@ -158,8 +165,8 @@ router.post('/leave-request', auth, async (req, res) => {
 // @access  Private
 router.get('/attendance', auth, async (req, res) => {
   try {
-    const startOfMonth = moment().startOf('month');
-    const endOfMonth = moment().endOf('month');
+    const startOfMonth = moment().utcOffset('+05:30').startOf('month');
+    const endOfMonth = moment().utcOffset('+05:30').endOf('month');
 
     const attendance = await Attendance.find({
       employee: req.employee.id,
