@@ -36,7 +36,7 @@ router.get('/me', auth, async (req, res) => {
     res.json(employee);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -51,7 +51,7 @@ router.post('/check-in', auth, async (req, res) => {
       date: null
     });
     
-    const today = moment().utcOffset('+05:30').startOf('day'); // Adjust for IST timezone
+    const today = moment().utcOffset('+05:30').startOf('day');
     
     // Check if employee has already checked in today
     const existingAttendance = await Attendance.findOne({
@@ -88,7 +88,7 @@ router.post('/check-in', auth, async (req, res) => {
     res.json(attendance);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -97,7 +97,7 @@ router.post('/check-in', auth, async (req, res) => {
 // @access  Private
 router.post('/check-out', auth, async (req, res) => {
   try {
-    const today = moment().utcOffset('+05:30').startOf('day'); // Adjust for IST timezone
+    const today = moment().utcOffset('+05:30').startOf('day');
     
     // Find today's attendance record
     const attendance = await Attendance.findOne({
@@ -127,7 +127,7 @@ router.post('/check-out', auth, async (req, res) => {
     res.json(attendance);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -149,7 +149,7 @@ router.post('/leave-request', auth, async (req, res) => {
     res.json(leave);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -172,7 +172,7 @@ router.get('/attendance', auth, async (req, res) => {
     res.json(attendance);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
@@ -190,7 +190,7 @@ router.get('/notifications', auth, async (req, res) => {
     res.json(notifications);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
