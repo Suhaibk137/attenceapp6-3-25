@@ -1,13 +1,26 @@
 {
-    "name": "elite-employee-web-app",
-    "version": "1.0.0",
-    "description": "Mobile-friendly employee attendance management system",
-    "main": "server/server.js",
-    "scripts": {
+  "name": "elite-employee-web-app",
+  "version": "1.0.0",
+  "description": "Mobile-friendly employee attendance management system",
+  "main": "server/server.js",
+  "engines": {
+      "node": ">=14.0.0"
+  },
+  "scripts": {
       "start": "node server/server.js",
-      "dev": "nodemon server/server.js"
-    },
-    "dependencies": {
+      "dev": "nodemon server/server.js",
+      "build": "echo 'No build step needed'",
+      "install": "npm ci --omit=dev"
+  },
+  "keywords": [
+      "employee",
+      "attendance",
+      "management",
+      "web-app"
+  ],
+  "author": "Your Name",
+  "license": "ISC",
+  "dependencies": {
       "express": "^4.18.2",
       "mongoose": "^7.5.0",
       "cors": "^2.8.5",
@@ -16,8 +29,8 @@
       "bcryptjs": "^2.4.3",
       "jsonwebtoken": "^9.0.1",
       "moment": "^2.29.4"
-    },
-    "devDependencies": {
+  },
+  "devDependencies": {
       "nodemon": "^3.0.1"
-    }
   }
+}
