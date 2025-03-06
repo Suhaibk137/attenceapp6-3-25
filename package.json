@@ -7,9 +7,8 @@
       "node": ">=14.0.0"
   },
   "scripts": {
-      "start": "node server/server.js",
+       "start": "node server/server.js",
       "dev": "nodemon server/server.js",
-      "build": "echo 'No build step needed'",
       "install": "npm ci --omit=dev"
   },
   "keywords": [
